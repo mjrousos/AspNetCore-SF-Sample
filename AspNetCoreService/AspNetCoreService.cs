@@ -36,6 +36,9 @@ namespace AspNetCoreService
                         ServiceEventSource.Current.ServiceMessage(serviceContext, $"Starting WebListener on {url}");
 
                         return new WebHostBuilder().UseWebListener()
+                                    // IWebHostBuilder.ConfigureServices provides a convenient way
+                                    // to register services from outside the web host builder and it's
+                                    // startup class.
                                     .ConfigureServices(
                                         services => services
                                             .AddSingleton<StatelessServiceContext>(serviceContext))
