@@ -32,12 +32,29 @@ namespace AspNetCoreService
             // Add framework services.
             services.AddMvc();
 
+            // Autofac recommends against updating existing containers.
+            // https://github.com/autofac/Autofac/issues/811
+            // They say that a better practice is to treat Autofac containers as immutable
+            // and create new ones, as needed. This would result in a different container
+            // being used by the ASP.NET Core app and the hosting service, but the same
+            // set of services would be available and may be a viable work around in
+            // some cases.
+            //
+            // Note that it's also possible to register services with IWebHostBuilder.ConfigureServices,
+            // which can be done in AspNetCoreService.cs outside of the ASP.NET Core's app's code.
+
+#if USE_AUTOFAC_UPDATE
             // Setup Autofac container that combines existing container and ASP.NET Core services
             var builder = new ContainerBuilder();
             builder.Populate(services);
             builder.Update(Program.Container);
-
             return new AutofacServiceProvider(Program.Container);
+#else // USE_AUTOFAC_UPDATE
+            var builder = new ContainerBuilder();
+            builder.RegisterModule(new MyAutofacModule());
+            builder.Populate(services);
+            return new AutofacServiceProvider(builder.Build());
+#endif // USE_AUTOFAC_UPDATE
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -11,19 +11,24 @@ namespace AspNetCoreService
     internal static class Program
     {
         public static IContainer Container { get; set; }
+
         /// <summary>
         /// This is the entry point of the service host process.
         /// </summary>
         private static void Main()
         {
+            // Create an Autofac container prior to setting up the web host
+            // in order to demonstrate how to use an existing container withing
+            // an ASP.NET Core host.
             var builder = new ContainerBuilder();
-            builder.RegisterInstance(new MyClass(5)).As<IMyInterface>();
+            builder.RegisterModule(new MyAutofacModule());
             Container = builder.Build();
 
             using (var scope = Container.BeginLifetimeScope())
             {
+                // Exercising the container prior to setting up the ASP.NET Core app
                 var myInterfaceImpl = scope.Resolve<IMyInterface>();
-                Debug.WriteLine($"ASP.NET Core Service not yet started, IMyInterface available with MyMethod value of {myInterfaceImpl.MyMethod()}");
+                Debug.WriteLine($"ASP.NET Core Service not yet started, IMyInterface available with MyProperty value of {myInterfaceImpl.MyProperty}");
             }
 
             try

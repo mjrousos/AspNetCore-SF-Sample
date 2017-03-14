@@ -4,7 +4,8 @@
     {
         public MyClass(int i) => MyProperty = i;
 
-        public int MyProperty { get; set; }
+        private int myPrivateField;
+        public int MyProperty { get => myPrivateField++; set => myPrivateField = value; }
 
         public string MyMethod()
         {
