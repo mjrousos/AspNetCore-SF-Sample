@@ -1,4 +1,6 @@
-﻿using Microsoft.ServiceFabric.Services.Runtime;
+﻿using Autofac;
+using Microsoft.ServiceFabric.Services.Runtime;
+using NetStandardLibrary;
 using System;
 using System.Diagnostics;
 using System.Threading;
@@ -8,11 +10,22 @@ namespace AspNetCoreService
 {
     internal static class Program
     {
+        public static IContainer Container { get; set; }
         /// <summary>
         /// This is the entry point of the service host process.
         /// </summary>
         private static void Main()
         {
+            var builder = new ContainerBuilder();
+            builder.RegisterInstance(new MyClass(5)).As<IMyInterface>();
+            Container = builder.Build();
+
+            using (var scope = Container.BeginLifetimeScope())
+            {
+                var myInterfaceImpl = scope.Resolve<IMyInterface>();
+                Debug.WriteLine($"ASP.NET Core Service not yet started, IMyInterface available with MyMethod value of {myInterfaceImpl.MyMethod()}");
+            }
+
             try
             {
                 // The ServiceManifest.XML file defines one or more service type names.

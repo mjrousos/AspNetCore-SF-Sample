@@ -7,7 +7,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NetStandardLibrary;
+using Autofac.Extensions.DependencyInjection;
+using Autofac;
 
 namespace AspNetCoreService
 {
@@ -26,13 +27,17 @@ namespace AspNetCoreService
         public IConfigurationRoot Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
+        public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            // Register an instance of 'MyClass : MyInterface' with DI
-            services.AddSingleton<IMyInterface>(new MyClass(11));
-
             // Add framework services.
             services.AddMvc();
+
+            // Setup Autofac container that combines existing container and ASP.NET Core services
+            var builder = new ContainerBuilder();
+            builder.Populate(services);
+            builder.Update(Program.Container);
+
+            return new AutofacServiceProvider(Program.Container);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
