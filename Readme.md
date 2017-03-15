@@ -24,4 +24,4 @@ Some techniques that might help:
 	2. If the services will be required outside of the web app, an Autofac module can be created in `Startup.ConfigureServices` and stored in a static property available outside of the web app.
 2. If DI resources are needed before the ASP.NET Core app is setup, there are a couple options:
 	1. Create two containers: one for use in the web app and one for use outside of it. Autofac modules can make it easy to setup matching containers. This is demonstrated in [Startup.cs](AspNetCoreService/Startup.cs#L53).
-	2. It's also possible to update an existing Autofac container (also demonstrated in [Startup.cs](./AspNetCoreService/Startup.cs#L48)), though it is an anti-pattern. If you feel you need this route, consider commenting on autofac/autofac#811 to explain why you need the Update method.
+	2. It's also possible to update an existing Autofac container (also demonstrated in [Startup.cs](./AspNetCoreService/Startup.cs#L48)), though it is an anti-pattern. If you feel you need this route, consider commenting on [autofac/autofac#811](https://github.com/autofac/Autofac/issues/811) to explain why you need the Update method.
